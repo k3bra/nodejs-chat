@@ -51,11 +51,16 @@
     </style>
 </head>
 <body>
+<div id="name"></div>
+
 <ul id="messages"></ul>
 <form action="">
     <input id="m" autocomplete="off"/>
     <button>Send</button>
 </form>
+<div id="typing">
+
+</div>
 </body>
 </html>
 
@@ -68,14 +73,15 @@
     var $messageInput = $('#m');
     var $messages = $('#messages');
     var socket = io();
-    
+    var $typing = $('#typing');
+    $('#name').html('<h1>' + nickname + '</h1>');
     socket.emit('add user', nickname);
 
     $('form').submit(function () {
         var message = $('#m').val();
         socket.emit('chat message', message);
         $messageInput.val('');
-        socket.emit('stop typing')
+        socket.emit('stop typing');
         return false;
     });
 
@@ -88,9 +94,16 @@
         socket.emit('typing');
     });
 
+    socket.on('stop typing', function (obj) {
+        console.log ('Remove' + obj.username);
+        $('.typing-' + obj.username).remove();
+    });
+
     socket.on('typing', function (user) {
         if (!sentTypingEvent && user.username != nickname) {
-            $messages.append(user.username + ' is writing...');
+            data = '<div class="typing-' + user.username + '"> ' + user.username + ' is typing... </div>';
+            console.log('add' +user.username);
+            $typing.append(data);
         }
         sentTypingEvent = true;
     });
