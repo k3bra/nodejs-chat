@@ -5,19 +5,30 @@
     var $messages = $('#messages');
     var socket = io();
     var $typing = $('#typing');
-    $('#name').html('<h1>' + nickname + '</h1>');
+    var colors = ["Red", "Orange", "Yellow", "Cyan", "Blue"];
+    var userColor = colors[getRandomInt(0,5)];
+    $('#username').html(nickname + '$');
+    $("#username").css({color: userColor});
+    $('#m').css({color: userColor});
+    $('#m').focus();
+
     socket.emit('add user', nickname);
 
+
+
     $('form').submit(function () {
-        var message = $('#m').val();
+        var message = {message: $('#m').val(), color: userColor};
         socket.emit('chat message', message);
         $messageInput.val('');
         socket.emit('stop typing');
         return false;
     });
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
 
     socket.on('chat message', function (obj) {
-        $messages.append($('<li>').text(obj.username + ': ' + obj.message));
+        $messages.append($('<li style="color:' + obj.color + ';">').text(obj.username + ': ' + obj.message));
         sentTypingEvent = false;
     });
 
@@ -33,7 +44,7 @@
     socket.on('typing', function (user) {
         if (!sentTypingEvent && user.username != nickname) {
             data = '<div class="typing-' + user.username + '"> ' + user.username + ' is typing... </div>';
-            console.log('add' +user.username);
+            console.log('add' + user.username);
             $typing.append(data);
         }
         sentTypingEvent = true;
