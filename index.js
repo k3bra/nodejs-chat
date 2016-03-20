@@ -19,11 +19,11 @@ io.on('connection', function (socket) {
     });
 
     socket.on('typing', function () {
-        io.emit('typing', {username: socket.username})
+        socket.broadcast.emit('typing', {username: socket.username})
     });
 
     socket.on('stop typing', function () {
-        io.emit('stop typing', {username: socket.username})
+        socket.broadcast.emit('stop typing', {username: socket.username})
     });
 });
 
