@@ -14,8 +14,6 @@
 
     socket.emit('add user', nickname);
 
-
-
     $('form').submit(function () {
         var message = {message: $('#m').val(), color: userColor};
         socket.emit('chat message', message);
@@ -32,19 +30,21 @@
         sentTypingEvent = false;
     });
 
+    socket.on('number users', function (obj) {
+        $("#nrUsers").text(obj.nrUsers + " hacker(s) online");
+    })
+
     $messageInput.on('input', function () {
         socket.emit('typing');
     });
 
     socket.on('stop typing', function (obj) {
-        console.log ('Remove' + obj.username);
         $('.typing-' + obj.username).remove();
     });
 
     socket.on('typing', function (user) {
         if (!sentTypingEvent && user.username != nickname) {
             data = '<div class="typing-' + user.username + '"> ' + user.username + ' is typing... </div>';
-            console.log('add' + user.username);
             $typing.append(data);
         }
         sentTypingEvent = true;
