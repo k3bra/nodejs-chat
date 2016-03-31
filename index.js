@@ -29,7 +29,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () {
-      --nrUsers;
+      if (nrUsers > 0) {
+        --nrUsers;        
+      }
       io.emit('number users', {
         nrUsers: nrUsers
       });
